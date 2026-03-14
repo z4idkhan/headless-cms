@@ -1,8 +1,8 @@
 package com.project.headless_cms.service;
 
+import com.project.headless_cms.config.JWTUtil;
 import com.project.headless_cms.model.Users;
 import com.project.headless_cms.repository.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,19 +16,17 @@ public class AuthService {
     @Autowired
     private PasswordEncoder encoder;
 
-    // REGISTER
+    @Autowired
+    private JWTUtil jwtUtil;
+
     public Users register(Users user) {
-        // encode password
         user.setPassword(encoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
-    // LOGIN
-    public Users login(String email, String password) {
-        Users user = repo.findByEmail(email);
-        if (user == null) {
-            user = repo.findByEmail(email);
-        }
+    public String login(String email, String password) {
+        Users user = repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (user == null) {
             throw new RuntimeException("User not found");
@@ -38,6 +36,6 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        return user; // login successful
+        return jwtUtil.generateToken(user.getEmail());
     }
 }

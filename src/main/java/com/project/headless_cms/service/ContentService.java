@@ -1,58 +1,101 @@
 package com.project.headless_cms.service;
 
-import com.project.headless_cms.config.JWTUtil;
-import com.project.headless_cms.model.Content;
-import com.project.headless_cms.model.Users;
+import com.project.headless_cms.model.*;
+import com.project.headless_cms.repository.CategoryRepository;
 import com.project.headless_cms.repository.ContentRepository;
+import com.project.headless_cms.repository.TagRepository;
+import com.project.headless_cms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ContentService {
 
     @Autowired
-    private ContentRepository repo;
+    private ContentRepository contentRepository;
 
     @Autowired
-    private JWTUtil jwtService;
+    private UserRepository userRepository;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private CategoryRepository categoryRepository;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    private TagRepository tagRepository;
 
-
-    public String verify(Users user) {
-        Authentication authentication =
-                authenticationManager.authenticate
-                        (new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword())
-                        );
-
-        if (authentication.isAuthenticated()){
-            return jwtService.generateToken(user.getUsername());
+    public List<Content> getAllContents(String keyword, ArticleStatus status) {
+        if (keyword != null && !keyword.isBlank()) {
+            return contentRepository.findByTitleContainingIgnoreCase(keyword);
         }
-        return "Fail";
+
+        if (status != null) {
+            return contentRepository.findByStatus(status);
+        }
+
+        return contentRepository.findAll();
     }
 
-    public Content create(Content c){
-        c.setPublished(false);
-        return repo.save(c);
+    public Content createContent(Content content, Long authorId, Long categoryId, List<Long> tagIds) {
+        Users author = userRepository.findById(authorId)
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        List<Tag> tags = tagRepository.findAllById(tagIds);
+
+        content.setAuthor(author);
+        content.setCategory(category);
+        content.setTags(tags);
+        content.setStatus(ArticleStatus.DRAFT);
+        content.setViews(0);
+        content.setCreatedAt(LocalDateTime.now());
+        content.setUpdatedAt(LocalDateTime.now());
+
+        return contentRepository.save(content);
     }
 
-    public Content publish(Long id){
+    public Content updateContent(Long id, Content request, Long categoryId, List<Long> tagIds) {
+        Content content = contentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Content not found"));
 
-        Content c = repo.findById(id).orElseThrow();
-        c.setPublished(true);
-        return repo.save(c);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        List<Tag> tags = tagRepository.findAllById(tagIds);
+
+        content.setTitle(request.getTitle());
+        content.setBody(request.getBody());
+        content.setCategory(category);
+        content.setTags(tags);
+        content.setUpdatedAt(LocalDateTime.now());
+
+        return contentRepository.save(content);
     }
 
-    public List<Content> publicData(){
-        return repo.findByPublishedTrue();
+    public Content publishContent(Long id) {
+        Content content = contentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Content not found"));
+
+        content.setStatus(ArticleStatus.PUBLISHED);
+        content.setUpdatedAt(LocalDateTime.now());
+
+        return contentRepository.save(content);
+    }
+
+    public Content getContentById(Long id) {
+        return contentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Content not found"));
+    }
+
+    public void deleteContent(Long id) {
+        contentRepository.deleteById(id);
+    }
+
+    public List<Content> getPublicPublishedContents() {
+        return contentRepository.findByStatus(ArticleStatus.PUBLISHED);
     }
 }
