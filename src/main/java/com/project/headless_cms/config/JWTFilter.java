@@ -38,34 +38,38 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // Skip auth endpoints
-        if (path.startsWith("/auth")) {
+        // ✅ Skip public endpoints
+        if (path.startsWith("/auth") || path.startsWith("/api/content/public")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
         String token = null;
         String username = null;
 
+        // ✅ Extract token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
 
             try {
                 username = jwtUtil.extractUserName(token);
             } catch (Exception e) {
+                // ❌ Invalid token → just continue without auth
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
+        // ✅ Validate & set authentication
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(token, userDetails)) {
 
+                // 🔥 CRITICAL: attach ROLE_ prefix
                 String role = jwtUtil.extractRole(token);
 
                 List<SimpleGrantedAuthority> authorities =
