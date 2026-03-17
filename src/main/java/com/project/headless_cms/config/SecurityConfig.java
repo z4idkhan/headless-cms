@@ -41,11 +41,20 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // ✅ Public endpoints
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/content/public").permitAll()
+
+                        // ✅ Category & Tag management
                         .requestMatchers("/api/categories/**").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers("/api/tags/**").hasAnyRole("ADMIN", "EDITOR")
+
+                        // ✅ Content rules
                         .requestMatchers("/api/content/*/publish").hasRole("ADMIN")
                         .requestMatchers("/api/content/**").hasAnyRole("ADMIN", "EDITOR")
+
+                        // ✅ Everything else secured
                         .anyRequest().authenticated()
                 )
 
