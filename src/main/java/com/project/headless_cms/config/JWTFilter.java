@@ -34,6 +34,7 @@ public class JWTFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        System.out.println("JWT FILTER EXECUTED");
         String path = request.getServletPath();
 
         if (path.startsWith("/auth")) {
