@@ -34,7 +34,9 @@ public class JWTFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        System.out.println("JWT FILTER EXECUTED");
+        // 🔥 STEP 1: Check filter hit
+        System.out.println("🔥 JWT FILTER EXECUTED");
+
         String path = request.getServletPath();
 
         if (path.startsWith("/auth")) {
@@ -44,6 +46,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        // 🔥 STEP 2: Check header
+        System.out.println("Auth Header: " + authHeader);
+
         String token = null;
         String username = null;
 
@@ -52,7 +57,15 @@ public class JWTFilter extends OncePerRequestFilter {
 
             try {
                 username = jwtUtil.extractUserName(token);
+
+                // 🔥 STEP 3: Check extracted username
+                System.out.println("Username from token: " + username);
+
+                // 🔥 STEP 4: Check role from token
+                System.out.println("Role from token: " + jwtUtil.extractRole(token));
+
             } catch (Exception e) {
+                System.out.println("Token parsing failed");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -62,9 +75,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+            // 🔥 STEP 5: Check authorities from DB
+            System.out.println("Authorities from UserDetails: " + userDetails.getAuthorities());
+
             if (jwtUtil.validateToken(token, userDetails)) {
 
-                // ✅ USE authorities from UserDetails (NOT manual)
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -77,6 +92,11 @@ public class JWTFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                // 🔥 STEP 6: Confirm authentication set
+                System.out.println("✅ Authentication set in SecurityContext");
+            } else {
+                System.out.println("❌ Token validation failed");
             }
         }
 
