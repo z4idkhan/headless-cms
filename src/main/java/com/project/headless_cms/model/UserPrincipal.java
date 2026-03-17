@@ -18,12 +18,18 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
+        // 🔥 SAFE CHECK (no crash, but logs issue)
         if (user.getRole() == null) {
-            throw new RuntimeException("User role is not assigned");
+            System.out.println("❌ User role is NULL for user: " + user.getEmail());
+            return List.of(); // no role → will cause 403 (correct behavior)
         }
 
+        String role = user.getRole().name();
+
+        System.out.println("✅ Assigning authority: ROLE_" + role);
+
         return List.of(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                new SimpleGrantedAuthority("ROLE_" + role)
         );
     }
 
@@ -54,7 +60,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.getStatus() == null || user.getStatus().name().equals("ACTIVE");
+
+        if (user.getStatus() == null) {
+            return true;
+        }
+
+        return user.getStatus().name().equals("ACTIVE");
     }
 
     // Optional helpers
