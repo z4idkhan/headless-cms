@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UserPrincipal implements UserDetails {
 
-    private Users user;
+    private final Users user;
 
     public UserPrincipal(Users user) {
         this.user = user;
@@ -18,13 +18,13 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        String role = "EDITOR";   // fallback role
-
-        if (user.getRole() != null) {
-            role = user.getRole().name();
+        if (user.getRole() == null) {
+            throw new RuntimeException("User role is not assigned");
         }
 
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+        );
     }
 
     @Override
@@ -34,7 +34,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // login uses email
+        return user.getEmail(); // email used as username
     }
 
     @Override
@@ -54,14 +54,10 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-
-        if (user.getStatus() == null) {
-            return true;
-        }
-
-        return user.getStatus().name().equals("ACTIVE");
+        return user.getStatus() == null || user.getStatus().name().equals("ACTIVE");
     }
 
+    // Optional helpers
     public Long getId() {
         return user.getId();
     }

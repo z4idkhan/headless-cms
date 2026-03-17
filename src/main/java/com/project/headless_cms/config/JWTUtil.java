@@ -29,7 +29,6 @@ public class JWTUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // ✅ GENERATE TOKEN WITH ROLE
     public String generateToken(String username, String role) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -44,26 +43,20 @@ public class JWTUtil {
                 .compact();
     }
 
-    // Extract Username
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // ✅ Extract Role
     public String extractRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
-    public <T> T extractClaim(
-            String token,
-            Function<Claims, T> resolver) {
-
+    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = extractAllClaims(token);
         return resolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
@@ -71,14 +64,9 @@ public class JWTUtil {
                 .getPayload();
     }
 
-    public boolean validateToken(
-            String token,
-            UserDetails userDetails) {
-
+    public boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUserName(token);
-
-        return username.equals(userDetails.getUsername())
-                && !isExpired(token);
+        return username.equals(userDetails.getUsername()) && !isExpired(token);
     }
 
     private boolean isExpired(String token) {
