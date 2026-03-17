@@ -6,23 +6,16 @@ import com.project.headless_cms.service.AuthService;
 import com.project.headless_cms.auth.LoginRequest;
 import com.project.headless_cms.auth.LoginResponse;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final AuthService authService;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JWTUtil jwtUtil,
-                          AuthService authService) {
-        this.authenticationManager = authenticationManager;
+    public AuthController(JWTUtil jwtUtil, AuthService authService) {
         this.jwtUtil = jwtUtil;
         this.authService = authService;
     }
@@ -39,14 +32,14 @@ public class AuthController {
             throw new RuntimeException("Invalid login request");
         }
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        req.getEmail(),
-                        req.getPassword()
-                )
-        );
+        // ✅ Step 1: validate user
+        Users user = authService.login(req.getEmail(), req.getPassword());
 
-        String token = jwtUtil.generateToken(req.getEmail());
+        // ✅ Step 2: generate JWT with role
+        String token = jwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name()
+        );
 
         return new LoginResponse(token);
     }

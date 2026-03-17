@@ -1,6 +1,5 @@
 package com.project.headless_cms.service;
 
-import com.project.headless_cms.config.JWTUtil;
 import com.project.headless_cms.model.Users;
 import com.project.headless_cms.model.UserRole;
 import com.project.headless_cms.model.UserStatus;
@@ -21,9 +20,6 @@ public class AuthService {
     @Autowired
     private PasswordEncoder encoder;
 
-    @Autowired
-    private JWTUtil jwtUtil;
-
     // REGISTER
     public Users register(Users user) {
 
@@ -39,7 +35,7 @@ public class AuthService {
     }
 
     // LOGIN
-    public String login(String email, String password) {
+    public Users login(String email, String password) {
 
         Users user = repo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -48,6 +44,6 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        return jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        return user; // ✅ return user (NOT token)
     }
 }
