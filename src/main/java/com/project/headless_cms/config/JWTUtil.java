@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -23,32 +25,36 @@ public class JWTUtil {
     private long expirationTime;
 
     private SecretKey getKey() {
-
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Generate Token
-    public String generateToken(String username) {
+    // ✅ GENERATE TOKEN WITH ROLE
+    public String generateToken(String username, String role) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
 
         return Jwts.builder()
+                .claims(claims)
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(
-                        new Date(System.currentTimeMillis()
-                                + expirationTime)
-                )
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getKey())
                 .compact();
     }
 
     // Extract Username
     public String extractUserName(String token) {
-
         return extractClaim(token, Claims::getSubject);
     }
 
-    private <T> T extractClaim(
+    // ✅ Extract Role
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    public <T> T extractClaim(
             String token,
             Function<Claims, T> resolver) {
 
@@ -76,12 +82,10 @@ public class JWTUtil {
     }
 
     private boolean isExpired(String token) {
-
         return extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {
-
         return extractClaim(token, Claims::getExpiration);
     }
 }
