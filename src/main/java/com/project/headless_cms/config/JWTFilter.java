@@ -16,8 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
-
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -36,16 +34,10 @@ public class JWTFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 🔥 VERY IMPORTANT FIX
-        if (path.startsWith("/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        // ✅ ALWAYS get path from request (CORRECT WAY)
+        String path = request.getServletPath();
 
-        // 🔥 STEP 1: Check filter hit
-
-        String path = request.getRequestURI();
-
+        // ✅ SKIP AUTH ENDPOINTS (VERY IMPORTANT)
         if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
@@ -54,38 +46,31 @@ public class JWTFilter extends OncePerRequestFilter {
         System.out.println("🔥 JWT FILTER EXECUTED");
 
         String authHeader = request.getHeader("Authorization");
-
-        // 🔥 STEP 2: Check header
         System.out.println("Auth Header: " + authHeader);
 
         String token = null;
         String username = null;
 
+        // ✅ Extract token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
 
             try {
                 username = jwtUtil.extractUserName(token);
-
-                // 🔥 STEP 3: Check extracted username
                 System.out.println("Username from token: " + username);
-
-                // 🔥 STEP 4: Check role from token
                 System.out.println("Role from token: " + jwtUtil.extractRole(token));
-
             } catch (Exception e) {
-                System.out.println("Token parsing failed");
+                System.out.println("❌ Token parsing failed");
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
+        // ✅ Authenticate user
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            // 🔥 STEP 5: Check authorities from DB
-            System.out.println("Authorities from UserDetails: " + userDetails.getAuthorities());
+            System.out.println("Authorities: " + userDetails.getAuthorities());
 
             if (jwtUtil.validateToken(token, userDetails)) {
 
@@ -101,9 +86,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                // 🔥 STEP 6: Confirm authentication set
-                System.out.println("✅ Authentication set in SecurityContext");
+                System.out.println("✅ Authentication set");
             } else {
                 System.out.println("❌ Token validation failed");
             }
