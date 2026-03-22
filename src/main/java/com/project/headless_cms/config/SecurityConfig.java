@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 // 🔥 THIS IS THE REAL FIX
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -79,19 +79,15 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of
-                (
-                "http://localhost:5173",
-                "http://localhost:8080"
-                ));
+//        config.setAllowedOrigins(List.of
+//                (
+//                "http://localhost:5173",
+//                "http://localhost:8080"
+//                ));
 
+
+        config.setAllowedOriginPatterns(List.of("*")); // ✅ FIXED
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-
-        config.setAllowedOriginPatterns(List.of("*")); // allow ALL
-        config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

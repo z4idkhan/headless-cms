@@ -44,7 +44,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 🔥 STEP 1: Check filter hit
 
-        String path = request.getServletPath();
+        String path = request.getRequestURI();
 
         if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
