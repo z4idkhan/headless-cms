@@ -56,12 +56,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/content/public").permitAll()
 
                         // ✅ Category & Tag management
-                        .requestMatchers("/api/categories/**").hasAnyRole("ADMIN", "EDITOR")
-                        .requestMatchers("/api/tags/**").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers("/api/categories/**").hasAnyRole("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/tags/**").hasAnyRole("ADMIN", "EMPLOYEE")
 
                         // ✅ Content rules
                         .requestMatchers("/api/content/*/publish").hasRole("ADMIN")
-                        .requestMatchers("/api/content/**").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers("/api/content/**").hasAnyRole("ADMIN", "EMPLOYEE")
 
                         // ✅ Everything else secured
                         .anyRequest().authenticated()
