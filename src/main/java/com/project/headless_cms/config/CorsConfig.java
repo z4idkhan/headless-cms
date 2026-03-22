@@ -14,9 +14,15 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins("*") // allow frontend
-                        .allowedMethods("*")
-                        .allowedHeaders("*");
+                        // ✅ USE PATTERNS INSTEAD OF "*"
+                        .allowedOriginPatterns(
+                                "http://localhost:5173",
+                                "http://localhost:8080",
+                                "https://content-management-system-eight.vercel.app"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // ✅ IMPORTANT
             }
         };
     }
