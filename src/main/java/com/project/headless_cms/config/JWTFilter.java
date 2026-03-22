@@ -16,6 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
+
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -34,8 +36,13 @@ public class JWTFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // 🔥 VERY IMPORTANT FIX
+        if (path.startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 🔥 STEP 1: Check filter hit
-        System.out.println("🔥 JWT FILTER EXECUTED");
 
         String path = request.getServletPath();
 
@@ -43,6 +50,8 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+        System.out.println("🔥 JWT FILTER EXECUTED");
 
         String authHeader = request.getHeader("Authorization");
 
