@@ -52,16 +52,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // ✅ Public endpoints
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/error").permitAll()
                         .requestMatchers("/api/content/public").permitAll()
 
                         // ✅ Category & Tag management
-                        .requestMatchers("/api/categories/**").hasAnyRole("ADMIN", "EMPLOYEE")
-                        .requestMatchers("/api/tags/**").hasAnyRole("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/categories/**").hasAnyRole("ADMIN", "EMPLOYEE", "EDITOR")
+                        .requestMatchers("/api/tags/**").hasAnyRole("ADMIN", "EMPLOYEE", "EDITOR")
 
                         // ✅ Content rules
                         .requestMatchers("/api/content/*/publish").hasRole("ADMIN")
-                        .requestMatchers("/api/content/**").hasAnyRole("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/content/**").hasAnyRole("ADMIN", "EMPLOYEE", "EDITOR")
 
                         // ✅ Everything else secured
                         .anyRequest().authenticated()

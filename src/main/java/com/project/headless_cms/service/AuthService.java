@@ -26,8 +26,11 @@ public class AuthService {
         // encode password
         user.setPassword(encoder.encode(user.getPassword()));
 
-        // default values
-        user.setRole(UserRole.EDITOR);
+        // keep submitted role, fall back to EDITOR
+        if (user.getRole() == null) {
+            user.setRole(UserRole.EDITOR);
+        }
+
         user.setStatus(UserStatus.ACTIVE);
         user.setJoinedDate(LocalDate.now());
 
@@ -44,6 +47,6 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        return user; // ✅ return user (NOT token)
+        return user;
     }
 }

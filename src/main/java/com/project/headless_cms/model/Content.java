@@ -9,7 +9,7 @@ import java.util.List;
 public class Content {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Used in MySql
     private Long id;
 
     private String title;
