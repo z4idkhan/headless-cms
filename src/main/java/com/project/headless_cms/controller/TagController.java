@@ -1,6 +1,7 @@
 package com.project.headless_cms.controller;
 
-import com.project.headless_cms.model.Tag;
+import com.project.headless_cms.dto.TagRequestDTO;
+import com.project.headless_cms.dto.TagResponseDTO;
 import com.project.headless_cms.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,18 +16,24 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping
-    public List<Tag> getTags(@RequestParam(required = false) String keyword) {
+    public List<TagResponseDTO> getTags(
+            @RequestParam(required = false) String keyword) {
+
         return tagService.getAllTags(keyword);
     }
 
     @PostMapping
-    public Tag createTag(@RequestBody Tag tag) {
-        return tagService.createTag(tag);
+    public TagResponseDTO createTag(
+            @RequestBody TagRequestDTO request) {
+
+        return tagService.createTag(request);
     }
 
     @DeleteMapping("/{id}")
     public String deleteTag(@PathVariable Long id) {
+
         tagService.deleteTag(id);
+
         return "Tag deleted successfully";
     }
 }
