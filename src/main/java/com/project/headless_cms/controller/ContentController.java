@@ -1,7 +1,8 @@
 package com.project.headless_cms.controller;
 
+import com.project.headless_cms.dto.ContentRequestDTO;
+import com.project.headless_cms.dto.ContentResponseDTO;
 import com.project.headless_cms.model.ArticleStatus;
-import com.project.headless_cms.model.Content;
 import com.project.headless_cms.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,52 +16,62 @@ public class ContentController {
     @Autowired
     private ContentService contentService;
 
+
     @GetMapping
-    public List<Content> getAllContents(
+    public List<ContentResponseDTO> getAllContents(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ArticleStatus status
     ) {
         return contentService.getAllContents(keyword, status);
     }
 
+
     @GetMapping("/{id}")
-    public Content getContentById(@PathVariable Long id) {
+    public ContentResponseDTO getContentById(
+            @PathVariable Long id) {
+
         return contentService.getContentById(id);
     }
 
+
     @PostMapping
-    public Content createContent(
-            @RequestBody Content content,
-            @RequestParam Long authorId,
-            @RequestParam Long categoryId,
-            @RequestParam List<Long> tagIds
-    ) {
-        return contentService.createContent(content, authorId, categoryId, tagIds);
+    public ContentResponseDTO createContent(
+            @RequestBody ContentRequestDTO request) {
+
+        return contentService.createContent(request);
     }
+
 
     @PutMapping("/{id}")
-    public Content updateContent(
+    public ContentResponseDTO updateContent(
             @PathVariable Long id,
-            @RequestBody Content content,
-            @RequestParam Long categoryId,
-            @RequestParam List<Long> tagIds
-    ) {
-        return contentService.updateContent(id, content, categoryId, tagIds);
+            @RequestBody ContentRequestDTO request) {
+
+        return contentService.updateContent(id, request);
     }
 
+
     @PutMapping("/{id}/publish")
-    public Content publishContent(@PathVariable Long id) {
+    public ContentResponseDTO publishContent(
+            @PathVariable Long id) {
+
         return contentService.publishContent(id);
     }
 
+
     @DeleteMapping("/{id}")
-    public String deleteContent(@PathVariable Long id) {
+    public String deleteContent(
+            @PathVariable Long id) {
+
         contentService.deleteContent(id);
+
         return "Content deleted successfully";
     }
 
+
     @GetMapping("/public")
-    public List<Content> getPublicContents() {
+    public List<ContentResponseDTO> getPublicContents() {
+
         return contentService.getPublicPublishedContents();
     }
 }

@@ -1,6 +1,7 @@
 package com.project.headless_cms.controller;
 
-import com.project.headless_cms.model.Category;
+import com.project.headless_cms.dto.CategoryRequestDTO;
+import com.project.headless_cms.dto.CategoryResponseDTO;
 import com.project.headless_cms.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,23 +16,32 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public List<Category> getCategories(@RequestParam(required = false) String keyword) {
+    public List<CategoryResponseDTO> getCategories(
+            @RequestParam(required = false) String keyword) {
+
         return categoryService.getAllCategories(keyword);
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public CategoryResponseDTO createCategory(
+            @RequestBody CategoryRequestDTO categoryRequest) {
+
+        return categoryService.createCategory(categoryRequest);
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
+    public CategoryResponseDTO updateCategory(
+            @PathVariable Long id,
+            @RequestBody CategoryRequestDTO categoryRequest) {
+
+        return categoryService.updateCategory(id, categoryRequest);
     }
 
     @DeleteMapping("/{id}")
     public String deleteCategory(@PathVariable Long id) {
+
         categoryService.deleteCategory(id);
+
         return "Category deleted successfully";
     }
 }
