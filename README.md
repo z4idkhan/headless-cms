@@ -1,6 +1,6 @@
-# Headless CMS
+                                                        # Headless CMS
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+            [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A backend-focused Headless Content Management System built using **Java, Spring Boot, Spring Security, and PostgreSQL**. It provides secure REST APIs for managing content independently of any frontend application.
 
