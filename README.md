@@ -1,5 +1,7 @@
 # Headless CMS
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A backend-focused Headless Content Management System built using **Java, Spring Boot, Spring Security, and PostgreSQL**. It provides secure REST APIs for managing content independently of any frontend application.
 
 The project follows the headless CMS architecture, separating content management and delivery from the presentation layer. This allows different clients, such as React applications, mobile applications, or other services, to consume content through APIs.
@@ -123,9 +125,6 @@ Make sure you have the following installed:
 
 ```bash
 git clone <YOUR_BACKEND_REPOSITORY_URL>
-```
-
-```bash
 cd <YOUR_PROJECT_DIRECTORY>
 ```
 
@@ -159,6 +158,8 @@ JWT_SECRET=your_secret_key
 
 Use your application's actual configuration property names if they differ.
 
+**Note:** Never commit sensitive credentials or JWT secrets to version control.
+
 ### 4. Run the Application
 
 Using Maven:
@@ -167,7 +168,7 @@ Using Maven:
 mvn spring-boot:run
 ```
 
-Alternatively:
+Alternatively, build and run the JAR:
 
 ```bash
 mvn clean package
@@ -202,4 +203,4 @@ This project demonstrates practical backend engineering concepts, including:
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
