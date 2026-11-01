@@ -202,4 +202,4 @@ This project demonstrates practical backend engineering concepts, including:
 
 ## License
 
-This project is intended for educational purposes and as a demonstration of backend development using Java and Spring Boot.
+This project is licensed under the MIT License.
