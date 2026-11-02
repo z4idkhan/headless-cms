@@ -52,7 +52,11 @@ public class Users {
     }
 
     public String getPassword() {
-        return password;
+        return password;<<<<<<< HEAD
+// Your local code
+                =======
+// Code from GitHub
+                >>>>>>> origin/main`
     }
 
     public void setPassword(String password) {

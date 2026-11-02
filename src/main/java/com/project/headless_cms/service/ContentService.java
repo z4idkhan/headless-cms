@@ -205,6 +205,12 @@ public class ContentService {
                 .toList();
 
 
+        List<String> tagNames = content.getTags()
+                .stream()
+                .map(Tag::getName)
+                .toList();
+
+
         return new ContentResponseDTO(
 
                 content.getId(),
@@ -225,7 +231,6 @@ public class ContentService {
 
                 content.getCategory().getId(),
 
-                tagIds
         );
     }
 }
