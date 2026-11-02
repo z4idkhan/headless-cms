@@ -1,5 +1,6 @@
 package com.project.headless_cms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,12 @@ public class Category {
     private String slug;
 
     private String description;
+
+    // ✅ NEW: who created this category (null = default/seeded)
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    @JsonIgnore // never send the user object (has password hash)
+    private Users createdBy;
 
     public Long getId() {
         return id;
@@ -40,5 +47,18 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Users getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Users createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    // ✅ Sent to frontend instead of the full user
+    public String getCreatedByEmail() {
+        return createdBy == null ? null : createdBy.getEmail();
     }
 }

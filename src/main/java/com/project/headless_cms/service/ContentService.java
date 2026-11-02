@@ -1,5 +1,6 @@
 package com.project.headless_cms.service;
 
+import com.project.headless_cms.config.OwnershipGuard;
 import com.project.headless_cms.dto.ContentRequestDTO;
 import com.project.headless_cms.dto.ContentResponseDTO;
 import com.project.headless_cms.model.*;
@@ -28,6 +29,9 @@ public class ContentService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private OwnershipGuard guard;
 
 
     // GET ALL CONTENTS
@@ -116,6 +120,9 @@ public class ContentService {
                 .orElseThrow(() ->
                         new RuntimeException("Content not found"));
 
+        // ✅ Only author or admin can edit
+        guard.checkOwnerOrAdmin(content.getAuthor());
+
 
         Category category = categoryRepository
                 .findById(request.getCategoryId())
@@ -151,6 +158,9 @@ public class ContentService {
                 .orElseThrow(() ->
                         new RuntimeException("Content not found"));
 
+        // ✅ Only author or admin can publish
+        guard.checkOwnerOrAdmin(content.getAuthor());
+
 
         content.setStatus(ArticleStatus.PUBLISHED);
         content.setUpdatedAt(LocalDateTime.now());
@@ -179,7 +189,14 @@ public class ContentService {
 
     public void deleteContent(Long id) {
 
-        contentRepository.deleteById(id);
+        Content content = contentRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Content not found"));
+
+        // ✅ Only author or admin can delete
+        guard.checkOwnerOrAdmin(content.getAuthor());
+
+        contentRepository.delete(content);
     }
 
 
@@ -231,8 +248,11 @@ public class ContentService {
 
                 content.getCategory().getId(),
 
-                tagIds
+                tagIds,
 
+                content.getAuthor().getFullName(),
+
+                content.getAuthor().getEmail()
         );
     }
 }

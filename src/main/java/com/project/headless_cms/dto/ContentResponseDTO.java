@@ -19,6 +19,10 @@ public class ContentResponseDTO {
     private Long categoryId;
     private List<Long> tagIds;
 
+    // ✅ NEW: so the frontend can show the author
+    private String authorName;
+    private String authorEmail;
+
     public ContentResponseDTO(
             Long id,
             String title,
@@ -29,7 +33,9 @@ public class ContentResponseDTO {
             LocalDateTime updatedAt,
             Long authorId,
             Long categoryId,
-            List<Long> tagIds
+            List<Long> tagIds,
+            String authorName,
+            String authorEmail
     ) {
         this.id = id;
         this.title = title;
@@ -41,6 +47,8 @@ public class ContentResponseDTO {
         this.authorId = authorId;
         this.categoryId = categoryId;
         this.tagIds = tagIds;
+        this.authorName = authorName;
+        this.authorEmail = authorEmail;
     }
 
     public Long getId() {
@@ -81,5 +89,13 @@ public class ContentResponseDTO {
 
     public List<Long> getTagIds() {
         return tagIds;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
     }
 }
