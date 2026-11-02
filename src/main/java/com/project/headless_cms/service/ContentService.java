@@ -231,6 +231,8 @@ public class ContentService {
 
                 content.getCategory().getId(),
 
+                tagIds
+
         );
     }
 }
