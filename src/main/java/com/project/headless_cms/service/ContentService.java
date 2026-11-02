@@ -8,6 +8,7 @@ import com.project.headless_cms.repository.ContentRepository;
 import com.project.headless_cms.repository.TagRepository;
 import com.project.headless_cms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -62,7 +63,12 @@ public class ContentService {
     public ContentResponseDTO createContent(
             ContentRequestDTO request) {
 
-        Users author = userRepository.findById(request.getAuthorId())
+        // Author = the logged-in user (email comes from the JWT)
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        Users author = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new RuntimeException("Author not found"));
 
@@ -202,12 +208,6 @@ public class ContentService {
         List<Long> tagIds = content.getTags()
                 .stream()
                 .map(Tag::getId)
-                .toList();
-
-
-        List<String> tagNames = content.getTags()
-                .stream()
-                .map(Tag::getName)
                 .toList();
 
 
