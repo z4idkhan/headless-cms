@@ -23,6 +23,10 @@ public class ContentResponseDTO {
     private String authorName;
     private String authorEmail;
 
+    // ✅ NEW: admin edit note (null if never edited by an admin)
+    private String editedByName;
+    private LocalDateTime editedAt;
+
     public ContentResponseDTO(
             Long id,
             String title,
@@ -35,7 +39,9 @@ public class ContentResponseDTO {
             Long categoryId,
             List<Long> tagIds,
             String authorName,
-            String authorEmail
+            String authorEmail,
+            String editedByName,
+            LocalDateTime editedAt
     ) {
         this.id = id;
         this.title = title;
@@ -49,6 +55,8 @@ public class ContentResponseDTO {
         this.tagIds = tagIds;
         this.authorName = authorName;
         this.authorEmail = authorEmail;
+        this.editedByName = editedByName;
+        this.editedAt = editedAt;
     }
 
     public Long getId() {
@@ -97,5 +105,13 @@ public class ContentResponseDTO {
 
     public String getAuthorEmail() {
         return authorEmail;
+    }
+
+    public String getEditedByName() {
+        return editedByName;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return editedAt;
     }
 }

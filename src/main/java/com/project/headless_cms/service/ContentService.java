@@ -142,6 +142,13 @@ public class ContentService {
 
         content.setUpdatedAt(LocalDateTime.now());
 
+        // ✅ Admin edited someone else's article → record who + when
+        Users editor = guard.currentUser();
+        if (!editor.getId().equals(content.getAuthor().getId())) {
+            content.setLastEditedBy(editor);
+            content.setLastEditedAt(LocalDateTime.now());
+        }
+
 
         Content updatedContent =
                 contentRepository.save(content);
@@ -252,7 +259,14 @@ public class ContentService {
 
                 content.getAuthor().getFullName(),
 
-                content.getAuthor().getEmail()
+                content.getAuthor().getEmail(),
+
+                content.getLastEditedBy() == null ? null
+                        : (content.getLastEditedBy().getFullName() != null
+                        ? content.getLastEditedBy().getFullName()
+                        : content.getLastEditedBy().getEmail()),
+
+                content.getLastEditedAt()
         );
     }
 }

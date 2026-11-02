@@ -42,6 +42,13 @@ public class Content {
     )
     private List<Tag> tags;
 
+    // ✅ NEW: set when an ADMIN edits someone else's article
+    @ManyToOne
+    @JoinColumn(name = "last_edited_by")
+    private Users lastEditedBy;
+
+    private LocalDateTime lastEditedAt;
+
     public Long getId() {
         return id;
     }
@@ -116,5 +123,21 @@ public class Content {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Users getLastEditedBy() {
+        return lastEditedBy;
+    }
+
+    public void setLastEditedBy(Users lastEditedBy) {
+        this.lastEditedBy = lastEditedBy;
+    }
+
+    public LocalDateTime getLastEditedAt() {
+        return lastEditedAt;
+    }
+
+    public void setLastEditedAt(LocalDateTime lastEditedAt) {
+        this.lastEditedAt = lastEditedAt;
     }
 }

@@ -59,8 +59,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/categories/**").hasAnyRole("ADMIN", "EMPLOYEE", "EDITOR")
                         .requestMatchers("/api/tags/**").hasAnyRole("ADMIN", "EMPLOYEE", "EDITOR")
 
+                        // ✅ Users list is admin-only
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+
                         // ✅ Content rules
-                        .requestMatchers("/api/content/*/publish").hasRole("ADMIN")
+                        // publish: author or admin (checked in ContentService)
                         .requestMatchers("/api/content/**").hasAnyRole("ADMIN", "EMPLOYEE", "EDITOR")
 
                         // ✅ Everything else secured
